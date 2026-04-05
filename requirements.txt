@@ -1,0 +1,31 @@
+# Install with: pip install -r requirements.txt
+
+# Core HTTP
+requests>=2.31.0
+urllib3>=2.0.0
+
+# Biopython - Entrez API wrapper
+biopython>=1.83
+
+# Data validation
+pydantic>=2.5.0
+
+# ML / ranking baseline
+scikit-learn>=1.4.0
+numpy>=1.26.0
+
+# Utilities
+python-dotenv>=1.0.0
+
+# Week 2 additions (install when ready):
+torch>=2.1.0
+transformers>=4.38.0
+sentence-transformers>=2.5.0
+
+# Week 3 additions:
+# spacy>=3.7.0
+# networkx>=3.2.0
+
+# Week 4 additions:
+# pandas>=2.2.0
+# matplotlib>=3.8.0

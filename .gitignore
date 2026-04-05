@@ -205,3 +205,12 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+# BioSearch local files
+.env
+venv/
+.venv/
+data/
+__pycache__/
+*.db
+*.sqlite
+*.sqlite3
