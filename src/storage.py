@@ -257,19 +257,21 @@ class PaperStorage:
 
     def get_paper(self, paper_id: str, source: str) -> Optional[Paper]:
         """Retrieve a single paper by ID and source. Returns None if not found."""
+        normalized_source = self._normalize_source(source)
         with self._get_connection() as conn:
             row = conn.execute(
                 'SELECT * FROM papers WHERE paper_id = ? AND source = ?',
-                (paper_id, source)
+                (paper_id, normalized_source)
             ).fetchone()
         return self._row_to_paper(row) if row else None
 
     def paper_exists(self, paper_id: str, source: str) -> bool:
         """Fast existence check - avoids deserialising the full row."""
+        normalized_source = self._normalize_source(source)
         with self._get_connection() as conn:
             result = conn.execute(
                 'SELECT 1 FROM papers WHERE paper_id = ? AND source = ? LIMIT 1',
-                (paper_id, source)
+                (paper_id, normalized_source)
             ).fetchone()
         return result is not None
 
@@ -282,9 +284,10 @@ class PaperStorage:
         """
         with self._get_connection() as conn:
             if source:
+                normalized_source = self._normalize_source(source)
                 rows = conn.execute(
                     'SELECT * FROM papers WHERE source = ? ORDER BY fetched_at DESC LIMIT ? OFFSET ?',
-                    (source, limit, offset)
+                    (normalized_source, limit, offset)
                 ).fetchall()
             else:
                 rows = conn.execute(
@@ -416,8 +419,9 @@ class PaperStorage:
         """Return total number of cached papers."""
         with self._get_connection() as conn:
             if source:
+                normalized_source = self._normalize_source(source)
                 return conn.execute(
-                    "SELECT COUNT(*) FROM papers WHERE source = ?", (source,)
+                    "SELECT COUNT(*) FROM papers WHERE source = ?", (normalized_source,)
                 ).fetchone()[0]
             return conn.execute("SELECT COUNT(*) FROM papers").fetchone()[0]
 

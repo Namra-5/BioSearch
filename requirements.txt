@@ -16,16 +16,17 @@ numpy>=1.26.0
 
 # Utilities
 python-dotenv>=1.0.0
+pytest
 
-# Week 2 additions (install when ready):
+# Week 2 additions:
 torch>=2.1.0
 transformers>=4.38.0
 sentence-transformers>=2.5.0
 
 # Week 3 additions:
-# spacy>=3.7.0
-# networkx>=3.2.0
+spacy>=3.7.0
+networkx>=3.2.0
 
 # Week 4 additions:
-# pandas>=2.2.0
-# matplotlib>=3.8.0
+pandas>=2.2.0
+matplotlib>=3.8.0

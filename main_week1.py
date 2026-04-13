@@ -69,7 +69,7 @@ def main() -> None:
         return
 
     if not args.query:
-        parser.error('the following arguments are required: --query/-q (unless using --stats)')
+        parser.error('the following arguments are required: --query/-q (unless using --stats or --prune-days)')
 
     if args.source in ('pubmed', 'both') and not NCBI_EMAIL:
         print('Error: Set NCBI_EMAIL in .env file to use PubMed fetcher.')
