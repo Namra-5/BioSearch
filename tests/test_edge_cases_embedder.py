@@ -5,6 +5,10 @@ from src.models import Paper
 pytestmark = [pytest.mark.slow, pytest.mark.integration]
 
 
+def _paper_result_key(paper: Paper) -> str:
+    return f"{paper.source}:{paper.paper_id}"
+
+
 @pytest.fixture(scope="module")
 def embedder():
     """
@@ -32,9 +36,10 @@ def test_empty_abstract_handling(embedder):
 
     try:
         result = embedder.embed_papers([paper])
+        key = _paper_result_key(paper)
 
-        assert paper.paper_id in result, "Paper missing from results"
-        assert result[paper.paper_id].shape == (768,), "Invalid embedding shape"
+        assert key in result, "Paper missing from results"
+        assert result[key].shape == (768,), "Invalid embedding shape"
 
     except Exception as e:
         pytest.fail(f"System crashed on empty abstract: {e}")
@@ -60,9 +65,10 @@ def test_long_abstract_truncation(embedder):
     )
 
     result = embedder.embed_papers([paper])
+    key = _paper_result_key(paper)
 
-    assert paper.paper_id in result, "Long abstract paper missing"
-    assert result[paper.paper_id].shape == (768,), "Embedding failed for long text"
+    assert key in result, "Long abstract paper missing"
+    assert result[key].shape == (768,), "Embedding failed for long text"
 
 
 # 3. Empty Query (Must raise ValueError)
