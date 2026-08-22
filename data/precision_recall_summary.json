@@ -1,0 +1,96 @@
+{
+  "per_query": [
+    {
+      "query_id": "Q1",
+      "pooled_relevant_count": 11,
+      "tfidf": {
+        "n_in_top_n": 10,
+        "relevant_in_top_n": 9,
+        "precision_at_10": 0.9,
+        "pooled_recall_at_10": 0.8182
+      },
+      "biobert": {
+        "n_in_top_n": 10,
+        "relevant_in_top_n": 9,
+        "precision_at_10": 0.9,
+        "pooled_recall_at_10": 0.8182
+      }
+    },
+    {
+      "query_id": "Q2",
+      "pooled_relevant_count": 10,
+      "tfidf": {
+        "n_in_top_n": 10,
+        "relevant_in_top_n": 8,
+        "precision_at_10": 0.8,
+        "pooled_recall_at_10": 0.8
+      },
+      "biobert": {
+        "n_in_top_n": 10,
+        "relevant_in_top_n": 7,
+        "precision_at_10": 0.7,
+        "pooled_recall_at_10": 0.7
+      }
+    },
+    {
+      "query_id": "Q3",
+      "pooled_relevant_count": 11,
+      "tfidf": {
+        "n_in_top_n": 10,
+        "relevant_in_top_n": 8,
+        "precision_at_10": 0.8,
+        "pooled_recall_at_10": 0.7273
+      },
+      "biobert": {
+        "n_in_top_n": 10,
+        "relevant_in_top_n": 10,
+        "precision_at_10": 1.0,
+        "pooled_recall_at_10": 0.9091
+      }
+    },
+    {
+      "query_id": "Q4",
+      "pooled_relevant_count": 13,
+      "tfidf": {
+        "n_in_top_n": 10,
+        "relevant_in_top_n": 9,
+        "precision_at_10": 0.9,
+        "pooled_recall_at_10": 0.6923
+      },
+      "biobert": {
+        "n_in_top_n": 10,
+        "relevant_in_top_n": 10,
+        "precision_at_10": 1.0,
+        "pooled_recall_at_10": 0.7692
+      }
+    },
+    {
+      "query_id": "Q5",
+      "pooled_relevant_count": 8,
+      "tfidf": {
+        "n_in_top_n": 10,
+        "relevant_in_top_n": 8,
+        "precision_at_10": 0.8,
+        "pooled_recall_at_10": 1.0
+      },
+      "biobert": {
+        "n_in_top_n": 10,
+        "relevant_in_top_n": 4,
+        "precision_at_10": 0.4,
+        "pooled_recall_at_10": 0.5
+      }
+    }
+  ],
+  "aggregate": {
+    "tfidf": {
+      "mean_precision_at_10": 0.84,
+      "mean_pooled_recall_at_10": 0.8076
+    },
+    "biobert": {
+      "mean_precision_at_10": 0.8,
+      "mean_pooled_recall_at_10": 0.7393
+    }
+  },
+  "n_queries_labeled": 5,
+  "methodology_note": "Recall is POOLED recall (TREC-style): denominator is the number of relevant papers found in the union of both methods' top-N, not the true corpus-wide relevant count, which is infeasible to determine exhaustively. Relevance judgments are human-labeled by the project author, not automatically generated."
+}

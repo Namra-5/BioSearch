@@ -209,7 +209,13 @@ __marimo__/
 .env
 venv/
 .venv/
-data/
+data/*
+!data/relevance_Q1.csv
+!data/relevance_Q2.csv
+!data/relevance_Q3.csv
+!data/relevance_Q4.csv
+!data/relevance_Q5.csv
+!data/precision_recall_summary.json
 __pycache__/
 *.db
 *.sqlite
