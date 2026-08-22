@@ -20,13 +20,6 @@ def embedder():
 
 # 1. Empty Abstract Paper (Must not crash)
 def test_empty_abstract_handling(embedder):
-    """
-    Case:
-        Paper has empty abstract.
-    Expected:
-        System should NOT crash and should still return a vector.
-    """
-
     paper = Paper(
         paper_id="EMPTY_ABSTRACT",
         source="pubmed",
@@ -52,10 +45,9 @@ def test_long_abstract_truncation(embedder):
         Abstract exceeds model limit (~512 tokens equivalent).
     Expected:
         No crash + embedding produced normally.
-        (We cannot directly see truncation, but we ensure stability.)
-    """
+ """
 
-    long_text = "gene therapy " * 800  # synthetic 800-word abstract
+    long_text = "gene therapy " * 800  
 
     paper = Paper(
         paper_id="LONG_ABSTRACT",

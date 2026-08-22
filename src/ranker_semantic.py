@@ -1,5 +1,5 @@
 # src/ranker_semantic.py
-# Semantic Ranker for BioSearch AI — Week 2
+# Semantic ranker for BioSearch AI.
 
 # Ranks Paper objects against a query using BioBERT dense embeddings
 # and cosine similarity. Designed to be a drop-in replacement for
@@ -40,8 +40,8 @@ class SemanticRanker:
     represent vocabulary slots. Cosine similarity measures vocabulary overlap
     weighted by IDF scores.
 
-    In BioBERT embedding space, vectors are DENSE (all 768 dims are non-zero)
-    and dimensions represent learned semantic features — not words.
+    In BioBERT embedding space, vectors are dense and dimensions represent
+    learned semantic features rather than individual words.
     Cosine similarity measures how similarly two texts are "understood"
     by the model, not how many words they share.
 
@@ -53,7 +53,7 @@ class SemanticRanker:
         cosine(A, B)  = A · B        (when both are unit vectors)
 
     np.dot(query_vec, paper_vecs.T) computes this for all papers at once —
-    a single matrix multiply that is orders of magnitude faster than looping.
+    a single matrix multiplication rather than a Python loop.
 
     -- Normalisation: why it matters --
 
@@ -71,8 +71,7 @@ class SemanticRanker:
         ranker = SemanticRanker()   # or TFIDFRanker()
         results = ranker.rank(papers, query, top_n=10)
 
-    The method='biobert' label on each SearchResult distinguishes them
-    in Week 4's evaluation CSV.
+    The method='biobert' label on each SearchResult distinguishes the results.
     """
 
     def __init__(
@@ -228,9 +227,9 @@ class SemanticRanker:
         """
         Return the cosine similarity between two arbitrary text strings.
 
-        Useful for debugging and for the Week 4 evaluation:
-            ranker.compare_texts("malignancy", "cancer")       # ~0.87
-            ranker.compare_texts("malignancy", "photosynthesis") # ~0.12
+        Useful for debugging and comparing semantic similarity:
+            ranker.compare_texts("malignancy", "cancer")
+            ranker.compare_texts("malignancy", "photosynthesis")
 
         Returns a float in [0.0, 1.0].
 

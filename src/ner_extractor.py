@@ -1,9 +1,9 @@
 # src/ner_extractor.py
-# Biomedical Named Entity Recognition pipeline for BioSearch AI — Week 3
+# Biomedical named entity recognition pipeline for BioSearch AI.
 #
 # Architecture: HYBRID NER
 #   Layer 1 — EntityRuler (rule-based): 35 genes + 35 diseases as exact-match
-#              patterns. Fast, deterministic, zero false negatives for known entities.
+#              patterns. Fast and deterministic for covered entities.
 #   Layer 2 — spaCy statistical model (en_core_web_sm): catches novel entities
 #              the ruler has never seen. Labels mapped to GENE/DISEASE via heuristics.
 #
@@ -43,8 +43,8 @@ LABEL_DISEASE = 'DISEASE'
 # Why hard-coded dictionaries and not an external file?
 # We want zero external file dependencies — the project must run from a fresh 
 # git clone with only pip installs.
-# 35 genes and 35 diseases cover the most-cited entities in PubMed; the
-# statistical layer catches everything else.
+# The curated patterns cover common biomedical entities; the statistical layer
+# can identify additional entities.
 #
 # Case strategy: patterns stored in lower-case; matched with LOWER attribute
 # so BRCA1, Brca1, and brca1 all match. Exact-match is intentional — we do
@@ -357,10 +357,10 @@ class BioNERExtractor:
     """
     Hybrid biomedical Named Entity Recognition extractor.
 
-    -- Why a hybrid approach? --
+    -- Hybrid pipeline --
 
     RULE-BASED ONLY (EntityRuler):
-    + 100% recall for known entities — never misses BRCA1 if it is in patterns.
+    + Matches covered entities deterministically.
     + Fully deterministic — same text always gives same result.
     - 0% recall for entities NOT in the dictionary.
     - Requires maintenance as new genes are discovered.
@@ -373,13 +373,10 @@ class BioNERExtractor:
     - Misses genes it has never seen (novel mutations).
 
     HYBRID (EntityRuler FIRST, then statistical):
-    + Perfect recall for known entities (ruler handles them).
+    + Prioritises covered entities from the ruler.
     + Statistical model fills in novel entities ruler missed.
     + Ruler overrides statistical on known entities (no false relabelling).
     + The _is_gene_like() heuristic filters obviously wrong statistical hits.
-
-    This is the standard professional approach for biomedical NER when a
-    domain-specific model (e.g. scispaCy) is not available.
 
     -- Overlapping entity handling --
 
@@ -470,8 +467,8 @@ class BioNERExtractor:
                 # Multi-word statistical spans are almost always false positives in
                 # biomedical text: "complex interplay between", "sung et al.", etc.
                 # The ruler handles all legitimate multi-word entities (breast cancer,
-                # myocardial infarction) with 100% precision. Statistical multi-word
-                # hits add only noise.
+                # myocardial infarction). Statistical multi-word hits add noise
+                # for this general-purpose statistical model.
                 if len(span) > 1:
                     continue
                 

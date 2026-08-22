@@ -1,5 +1,5 @@
 # src/knowledge_graph.py
-# Biomedical Knowledge Graph for BioSearch AI — Week 3
+# Biomedical knowledge graph for BioSearch AI.
 #
 # Constructs a NetworkX graph from co-occurrence of Genes and Diseases
 # within paper abstracts. Each node is a canonical entity name.
@@ -147,10 +147,8 @@ class BioKnowledgeGraph:
             g1–g2                       (gene-gene pair)
             d1–d2                       (disease-disease pair)
 
-        Why include gene-gene and disease-disease edges?
-        In co-occurrence graphs, ANY co-mention is meaningful regardless of type.
-        BRCA1 + TP53 appearing in the same abstract suggests they operate in
-        related pathways — a relationship the graph makes explicit.
+        Gene-gene and disease-disease edges are included because the graph
+        represents all entity co-occurrences, regardless of entity type.
 
         Returns
         -------
@@ -287,11 +285,8 @@ class BioKnowledgeGraph:
         """
         Extract a subgraph containing entity and all nodes within `depth` hops.
 
-        Why subgraphs?
-        A full graph with 500 nodes is hard to visualise and reason about.
-        A 1-hop subgraph around 'brca1' shows its immediate co-occurrence network:
-        typically breast cancer, ovarian cancer, TP53, PALB2, and a handful of others.
-        A 2-hop subgraph shows what connects to those as well.
+        A subgraph contains the requested entity and all nodes within the
+        specified number of hops.
 
         Memory note: nx.ego_graph() returns a VIEW into the original graph
         for depth=1, which is O(degree) memory. For depth>1 it materialises
@@ -313,7 +308,6 @@ class BioKnowledgeGraph:
     def gene_disease_edges(self) -> list[tuple[str, str, int]]:
         """
         Return only the gene-disease edges (no gene-gene or disease-disease).
-        Most useful for the research evaluation in Week 4.
         Returns list of (gene, disease, weight).
         """
         result: list[tuple[str, str, int]] = []

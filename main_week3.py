@@ -1,6 +1,5 @@
 # main_week3.py
-# Week 3 CLI — extends Week 2 with --ner and --graph flags.
-# Full backwards compatibility: all Week 1/2 flags still work.
+# Retrieval CLI with optional NER and knowledge-graph operations.
 
 from __future__ import annotations
 
@@ -21,7 +20,7 @@ from src.ner_extractor import BioNERExtractor
 
 
 def _fetch_papers(args: argparse.Namespace, storage: PaperStorage, sq: SearchQuery):
-    """Shared fetching logic (unchanged from Week 2)."""
+    """Fetch papers from the selected sources, using the local cache when available."""
     papers = []
     if args.source in ('pubmed', 'both'):
         use_cache = (
@@ -166,13 +165,13 @@ def _run_graph(papers: list[Paper], args: argparse.Namespace) -> None:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description='BioSearch AI — Week 3 CLI')
+    parser = argparse.ArgumentParser(description='BioSearch AI retrieval CLI')
     parser.add_argument('--query', '-q', help='Biomedical search query')
     parser.add_argument('--max', '-m', type=int, default=15, help='Max results per source')
     parser.add_argument('--source', choices=['pubmed', 'biorxiv', 'both'], default='pubmed')
     parser.add_argument('--method', choices=['tfidf', 'biobert', 'none'], default='tfidf',
                         help="Ranking method ('none' skips ranking — useful with --ner/--graph)")
-    # Week 3 flags
+    # NER and graph options
     parser.add_argument('--ner', action='store_true',
                         help='Run NER and show extracted entities per paper')
     parser.add_argument('--graph', action='store_true',
@@ -185,7 +184,7 @@ def main() -> None:
                         help='Save edgelist as TSV to PATH (Gephi/Cytoscape compatible)')
     parser.add_argument('--rules-only', action='store_true',
                         help='Use rules-only NER (faster, no spaCy statistical model)')
-    # Shared flags
+    # Shared utility options
     parser.add_argument('--no-cache', action='store_true')
     parser.add_argument('--stats', action='store_true')
     parser.add_argument('--quiet', action='store_true')
@@ -215,7 +214,7 @@ def main() -> None:
         print('No papers found. Try a different query.')
         return
 
-    # ── Ranking (optional) ─────────────────────────────────────────────────────
+    # ── Optional ranking ──────────────────────────────────────────────────────
     if args.method == 'tfidf':
         ranker = TFIDFRanker()
         results = ranker.rank(papers, args.query, top_n=10)

@@ -1,5 +1,5 @@
 # main_week1.py
-# Week 1 integration test - running this to verify all components work together.
+# Legacy integration CLI for the initial retrieval pipeline.
 # Usage: python main_week1.py --query "BRCA1 breast cancer" --max 10
 
 from __future__ import annotations
@@ -39,7 +39,7 @@ def _result_to_dict(result: BaseModel) -> dict:
     }
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="BioSearch AI - Week 1 CLI")
+    parser = argparse.ArgumentParser(description="BioSearch AI retrieval CLI")
     parser.add_argument('--query', '-q', help='Biomedical search query')
     parser.add_argument('--max', '-m', type=int, default=10, help='Max results per source')
     parser.add_argument('--source', choices=['pubmed', 'biorxiv', 'both'], default='both', help='Data source to search')

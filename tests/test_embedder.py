@@ -21,8 +21,7 @@ def embedder():
 
 def test_semantic_ranking(embedder):
     """
-    Semantic intelligence test: 
-    Synonyms must be more similar than unrelated terms.
+    Test that synonyms are more similar than unrelated terms.
     """
     synonym_vecs = embedder.embed_texts(["myocardial infarction", "heart attack"])
     unrelated_vecs = embedder.embed_texts(["myocardial infarction", "volleyball"])
@@ -65,7 +64,6 @@ def test_semantic_unrelated(embedder):
 
 def test_cache_behavior(tmp_path):
     """
-    Verify:
     - First run inserts embeddings
     - Second run uses cache (no growth)
     """
@@ -114,11 +112,11 @@ def test_embedding_cache_roundtrip(tmp_path):
     assert np.allclose(vec, retrieved), "Vector mismatch after round-trip"
 
 
-# 4. obustness Test 
+# 4. Robustness Test 
 
 def test_empty_query_raises(embedder):
     """
-    System must FAIL CLEANLY on invalid input.
+    Empty query should raise ValueError.
     """
     with pytest.raises(ValueError):
         embedder.embed_query("")

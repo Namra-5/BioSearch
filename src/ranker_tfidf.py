@@ -1,7 +1,6 @@
 # src/ranker_tfidf.py
 # TF-IDF baseline ranker using scikit-learn.
-# This is the RESEARCH CONTROL — Week 4 will compare its scores against BioBERT.
-# Structured as a class to match the interface of the Week 2 semantic ranker.
+# Structured as a class to share the ranking interface with the semantic ranker.
 
 from __future__ import annotations
 
@@ -43,20 +42,17 @@ class TFIDFRanker:
         → 1.0 = identical direction = maximally similar.
         → 0.0 = no shared vocabulary = unrelated.
 
-    - Why this is the BASELINE (not the final system) 
+    - Baseline characteristics
     TF-IDF treats every word as independent. It cannot recognise:
     - 'Malignancy' and 'Cancer' as synonymous.
     - 'BRCA1' and 'breast cancer susceptibility gene 1' as the same concept.
     - Context: 'cold' in 'cold virus' vs 'cold temperature'.
 
-    BioBERT (Week 2) solves all three by embedding words in a 768-dimensional
+    BioBERT addresses these limitations by embedding words in a 768-dimensional
     semantic space learned from 29 billion words of biomedical text.
 
-    - Design decision: fit once, reuse many times 
-    The vectoriser is fitted on the CORPUS (all paper texts combined with the
-    query). We store it as self._vectorizer so that if you call rank() on the
-    same papers with a different query, you can re-use the vocabulary without
-    re-fitting from scratch (though a fresh fit is cleaner for new corpora).
+    The vectorizer is fitted on the current corpus and query for each rank()
+    call, and is retained on self._vectorizer for inspection after ranking.
     """
     def __init__(self, max_features: int = 10_000, ngram_range: tuple[int, int] = (1, 2),
         min_df: int = 1, sublinear_tf: bool = True,) -> None:

@@ -1,8 +1,5 @@
 # main_week2.py
-# Week 2 integration CLI — extends main_week1.py with --method flag.
-# Supports: --method tfidf | biobert | both
-# When 'both' is chosen, ranks with both methods and prints side-by-side for
-# visual comparison
+# Retrieval CLI supporting TF-IDF, BioBERT, or side-by-side ranking.
 
 from __future__ import annotations
 
@@ -101,7 +98,7 @@ def _print_side_by_side(tfidf_results, semantic_results, query: str) -> None:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description='BioSearch AI — Week 2 CLI')
+    parser = argparse.ArgumentParser(description='BioSearch AI retrieval CLI')
     parser.add_argument('--query', '-q', required=False, help='Biomedical search query')
     parser.add_argument('--max', '-m', type=int, default=10, help='Max results per source')
     parser.add_argument(

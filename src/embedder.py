@@ -1,12 +1,12 @@
 # src/embedder.py
-# BioBERT Semantic Embedder for BioSearch AI — Week 2
+# BioBERT semantic embedder for BioSearch AI.
 #
 # Responsibilities:
 #   1. Load the BioBERT sentence-transformer model exactly once (lazy singleton).
 #   2. Truncate long abstracts to the model's 512-token window safely.
 #   3. Embed any list of texts into 768-dimensional L2-normalised dense vectors.
-#   4. Cache every embedding in a dedicated SQLite table so the same paper is
-#      never re-embedded across sessions — model loading takes ~15s on CPU.
+#   4. Cache every embedding in a dedicated SQLite table to avoid repeated
+#      embedding work across sessions.
 #
 # Design principle: this file knows NOTHING about ranking or storage.py.
 # It is a pure "text-in / vector-out" service. The ranker consumes it.
@@ -40,15 +40,13 @@ def _paper_identity_key(paper: Paper) -> str:
 # ── Constants ──────────────────────────────────────────────────────────────────
 
 # Official HuggingFace identifier for the BioBERT STS model.
-# This specific checkpoint was fine-tuned on medical NLI + STS tasks,
-# giving it the strongest semantic similarity behaviour for biomedical text.
+# This checkpoint was fine-tuned on medical NLI and STS tasks.
 _MODEL_ID = 'pritamdeka/BioBERT-mnli-snli-scinli-scitail-mednli-stsb'
 
 # BioBERT (and all BERT-family models) have a hard limit of 512 WordPiece tokens.
-# A typical PubMed abstract is 250–300 words ≈ 350–400 tokens.
-# Long structured abstracts can exceed 512 tokens and will be silently truncated
-# by the tokenizer if we don't handle it ourselves.
-# We cap at 400 WORDS (conservative) — sentence-transformers then tokenizes further.
+# Long structured abstracts can exceed 512 tokens and will be truncated by the
+# tokenizer if they are not shortened first. The word cap is a coarse bound;
+# sentence-transformers applies the model's token limit afterward.
 _MAX_WORDS = 400
 
 # Dimension of the BioBERT output embedding. Fixed by the architecture.
@@ -86,11 +84,11 @@ class _EmbeddingCache:
     - A separate DB file can be deleted without losing paper metadata.
     - This also makes it easy to invalidate the cache if you switch models.
 
-    Why BLOBs?
+    BLOB storage keeps vectors compact and avoids JSON or pickle overhead.
     numpy arrays serialised with np.tobytes() / np.frombuffer() are:
     - Faster to read/write than JSON or pickle.
     - Compact: 768 float32 values = 3,072 bytes per vector.
-    - Exactly reversible — no floating-point rounding.
+    - Reconstructed as float32 arrays without serialization-format overhead.
     """
 
     def __init__(self, db_path: Path = _DEFAULT_CACHE_PATH, model_id:str = _MODEL_ID) -> None:
@@ -115,6 +113,7 @@ class _EmbeddingCache:
 
     def _init_db(self) -> None:
         with self._conn() as conn:
+            conn.execute('PRAGMA journal_mode=WAL')
             conn.executescript(_CREATE_EMBEDDINGS_TABLE + _CREATE_EMBEDDING_INDEX)
             logger.debug('EmbeddingCache schema ready.')
 
@@ -190,12 +189,9 @@ def _truncate_to_word_limit(text: str, max_words: int = _MAX_WORDS) -> str:
     """
     Truncate text to at most max_words words.
 
-    Why truncate by WORDS rather than TOKENS?
-    The tokenizer runs inside sentence-transformers and is opaque to us.
-    A single English word produces 1–4 WordPiece tokens.
-    Cutting at 400 words gives a comfortable safety margin below 512 tokens
-    for any biomedical text (which has a higher token/word ratio than general
-    English due to long compound terms like "glycosylphosphatidylinositol").
+    The tokenizer runs inside sentence-transformers and is opaque to this
+    module. The word limit is a coarse bound; the model tokenizer applies the
+    final 512-token limit.
 
     We preserve the BEGINNING of the text because PubMed abstracts are
     structured: the first sentences contain Background and Objective, which
@@ -239,13 +235,10 @@ class BioBERTEmbedder:
     """
     Wraps the pritamdeka/BioBERT STS model from sentence-transformers.
 
-    -- Why BioBERT over general BERT? --
+    -- Model characteristics --
     General BERT (bert-base-uncased) was pre-trained on Wikipedia + BookCorpus.
     It has never seen medical literature in any meaningful volume, so it
     represents biomedical synonyms as unrelated vectors:
-
-        cosine("malignancy", "cancer")  ≈ 0.31   ← general BERT
-        cosine("malignancy", "cancer")  ≈ 0.87   ← BioBERT
 
     BioBERT was pre-trained on 29 billion words of PubMed abstracts + PMC
     full-text articles before fine-tuning on NLI and STS tasks. This gives it:
@@ -259,7 +252,8 @@ class BioBERTEmbedder:
     for words not in this document). A corpus of 10,000-word vocab has
     10,000-dimensional vectors where 9,800+ entries are zero.
 
-    BioBERT produces DENSE vectors: ALL 768 dimensions carry information.
+    BioBERT produces dense vectors whose dimensions encode learned semantic
+    features.
     Every dimension encodes a learned semantic feature. Two papers that share
     no vocabulary but describe the same concept will still have high cosine
     similarity because they activate the same learned features.
@@ -273,8 +267,7 @@ class BioBERTEmbedder:
 
     -- Device management (CUDA vs CPU) --
     sentence-transformers auto-detects CUDA. On your laptop (CPU), encoding
-    20 papers takes ~8-15 seconds. On a GPU, ~0.3 seconds. The device
-    parameter lets you force CPU for reproducibility during testing:
+    The device parameter lets you select CPU or CUDA for reproducibility:
         embedder = BioBERTEmbedder(device='cpu')
 
     -- Lazy loading --

@@ -1,8 +1,8 @@
 # src/models.py
 """
-Data models for BioSearch AI
-Defines the core Pydantic schemas for paper representation, search queries, and results. 
-All incoming data is validated here before touching any other system.
+Data models for BioSearch AI.
+
+Defines the validated Paper, SearchResult, and related domain models.
 """
 from __future__ import annotations
 
@@ -93,6 +93,14 @@ class Paper(BaseModel):
             if text.startswith(':'):
                 text = text[1:].strip()
         return text
+
+    @field_validator("url")
+    @classmethod
+    def validate_url_scheme(cls, v: Optional[str]) -> Optional[str]:
+        if v is not None and not v.startswith(("http://", "https://")):
+            logger.warning("Rejected paper URL with disallowed scheme: %r", v)
+            return None
+        return v
     
     @model_validator(mode="after")
     def build_url_if_missing(self) -> "Paper":

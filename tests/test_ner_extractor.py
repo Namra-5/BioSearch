@@ -1,6 +1,5 @@
 # tests/test_ner_extractor.py
-# Fast unit tests for BioNERExtractor (rules-only mode — no spaCy download needed).
-# These tests run in < 3 seconds and require only: pip install spacy
+# Unit tests for BioNERExtractor (rules-only mode — no spaCy download needed).
 
 import pytest
 from src.ner_extractor import (
@@ -9,7 +8,7 @@ from src.ner_extractor import (
 
 @pytest.fixture(scope='module')
 def extractor():
-    """Rules-only extractor: no en_core_web_sm download needed for CI."""
+    """Rules-only extractor"""
     return BioNERExtractor(use_statistical=False)
 
 
@@ -26,7 +25,7 @@ def test_is_gene_like_true():
     assert _is_gene_like('CDK4') is True
 
 def test_is_gene_like_false_common():
-    # Common abbreviations must NOT be classified as genes
+    # Common abbreviations must not be classified as genes
     assert _is_gene_like('RNA') is False
     assert _is_gene_like('DNA') is False
 
@@ -114,7 +113,6 @@ def test_deduplication_same_gene_multiple_mentions(extractor):
         'BRCA1 plays a role in DNA repair. BRCA1 mutations are pathogenic. '
         'Studies of BRCA1 continue.', 'dup'
     )
-    # Should appear only ONCE despite three mentions
     assert pe.genes.count('brca1') == 1
 
 def test_deduplication_same_disease_multiple_mentions(extractor):
