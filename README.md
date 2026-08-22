@@ -7,7 +7,6 @@
 [![Python](https://img.shields.io/badge/python-3.13-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![Tests](https://img.shields.io/github/actions/workflow/status/Namra-5/BioSearch/tests.yml?branch=main&label=tests)](https://github.com/Namra-5/BioSearch/actions)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![Status](https://img.shields.io/badge/status-Phase%202%20%E2%80%94%20evaluation%20%26%20hardening-blueviolet)](#evaluation--findings)
 
 </div>
 
