@@ -109,6 +109,7 @@ class PaperStorage:
 
     def _initialise_db(self) -> None:
         with self._get_connection() as conn:
+            conn.execute('PRAGMA journal_mode=WAL')
             conn.executescript(
                 _CREATE_PAPERS_TABLE
                 + _CREATE_QUERIES_TABLE
@@ -298,7 +299,7 @@ class PaperStorage:
         papers = [self._row_to_paper(r) for r in rows]
         return [p for p in papers if p is not None]
 
-    def search_cached(self, query: str, source: Optional[str] = None) -> list[Paper]:
+    def search_cached(self, query: str, source: Optional[str] = None, limit: int = 200) -> list[Paper]:
         """
         Prefer exact cached query results when available.
 
@@ -306,6 +307,8 @@ class PaperStorage:
         recent fetch for the same query/source pair, then to a simple text
         match on title/abstract.
         """
+        if limit <= 0:
+            raise ValueError('limit must be > 0')
         normalized_query = self._normalize_query(query)
         normalized_source = self._normalize_source(source) if source else None
         with self._get_connection() as conn:
@@ -320,8 +323,9 @@ class PaperStorage:
                     WHERE qr.query = ?
                       AND qr.source = ?
                     ORDER BY qr.paper_rank ASC
+                                        LIMIT ?
                     """,
-                    (normalized_query, normalized_source),
+                                        (normalized_query, normalized_source, limit),
                 ).fetchall()
                 if not rows:
                     recent_log = conn.execute(
@@ -343,22 +347,26 @@ class PaperStorage:
                             ORDER BY fetched_at DESC
                             LIMIT ?
                             """,
-                            (normalized_source, recent_log[0]),
+                            (normalized_source, min(recent_log[0], limit)),
                         ).fetchall()
                 if not rows:
                     pattern = f'%{normalized_query.lower()}%'
                     rows = conn.execute(
-                        'SELECT * FROM papers WHERE source = ? AND (LOWER(title) LIKE ? OR LOWER(abstract) LIKE ?)',
-                        (normalized_source, pattern, pattern)
+                        'SELECT * FROM papers WHERE source = ? AND (LOWER(title) LIKE ? OR LOWER(abstract) LIKE ?) LIMIT ?',
+                        (normalized_source, pattern, pattern, limit)
                     ).fetchall()
             else:
                 pattern = f'%{normalized_query.lower()}%'
                 rows = conn.execute(
-                    'SELECT * FROM papers WHERE LOWER(title) LIKE ? OR LOWER(abstract) LIKE ?',
-                    (pattern, pattern)
+                    'SELECT * FROM papers WHERE LOWER(title) LIKE ? OR LOWER(abstract) LIKE ? LIMIT ?',
+                    (pattern, pattern, limit)
                 ).fetchall()
 
         return [p for r in rows if (p := self._row_to_paper(r)) is not None]
+
+    def get_papers_for_query(self, query: str, source: Optional[str] = None) -> list[Paper]:
+        """Backward-compatible lookup used by the CLI evaluation path."""
+        return self.search_cached(query, source=source)
 
     def cache_query_results(self, query: str, source: str, papers: list[Paper]) -> int:
         """Save papers, record the query log, and link the query to the returned papers."""

@@ -20,8 +20,9 @@ from src.models import DataSource, Paper
 logger = logging.getLogger(__name__)
 
 _BIORXIV_BASE = 'https://api.biorxiv.org/details'
+_EUROPE_PMC_SEARCH = 'https://www.ebi.ac.uk/europepmc/webservices/rest/search'
 _REQUEST_TIMEOUT = 60   # seconds
-_SLEEP_BETWEEN = 0.5    # seconds between pages; API has no stated limit but be polite
+_SLEEP_BETWEEN = 0.5    # seconds between page requests
 _MAX_RETRIES = 3
 
 
@@ -97,6 +98,41 @@ def _parse_biorxiv_paper(item: dict, server: str) -> Optional[Paper]:
     except Exception as exc:
         logger.warning('Failed to parse bioRxiv item: %s | item: %s', exc, str(item)[:120])
         return None
+
+
+def _parse_europe_pmc_preprint(item: dict, server: str) -> Optional[Paper]:
+    """Convert an Europe PMC preprint search result into a Paper object."""
+    try:
+        doi = (item.get('doi') or '').strip()
+        title = re.sub(r'<[^>]+>', '', item.get('title') or '').strip()
+        if not doi or not title:
+            return None
+
+        abstract = re.sub(r'<[^>]+>', '', item.get('abstractText') or '').strip()
+        authors = [
+            author.get('fullName', '').strip()
+            for author in item.get('authorList', {}).get('author', [])
+            if author.get('fullName', '').strip()
+        ]
+        pub_date: Optional[datetime] = None
+        pub_year = str(item.get('pubYear') or '').strip()
+        if pub_year.isdigit():
+            pub_date = datetime(int(pub_year), 1, 1)
+
+        return Paper(
+            paper_id=doi,
+            title=title,
+            abstract=abstract,
+            authors=authors,
+            published_date=pub_date,
+            source=DataSource.BIORXIV,
+            doi=doi,
+            journal=f'{server.capitalize()} (Europe PMC)',
+            url=f'https://doi.org/{doi}',
+        )
+    except Exception as exc:
+        logger.warning('Failed to parse Europe PMC preprint: %s', exc)
+        return None
     
 class BioRxivFetcher:
     """
@@ -106,9 +142,8 @@ class BioRxivFetcher:
       - Date interval:  /details/{server}/{start_date}/{end_date}/{cursor}
       - Single DOI:     /details/{server}/{doi}
 
-    We use the date-interval mode with server-side keyword filtering
-    (the API does not support full-text search, so we do local filtering
-    on title and abstract after fetching).
+    We use the date-interval mode and filter title and abstract locally
+    because the API does not provide full-text search.
 
     Parameters
     ----------
@@ -147,6 +182,28 @@ class BioRxivFetcher:
         except requests.RequestException as exc:
             logger.error('Request to bioRxiv failed: %s', exc)
             return {}
+
+    def _fetch_europe_pmc_fallback(self, query: str, max_results: int) -> list[Paper]:
+        """Fetch bioRxiv-indexed preprints through Europe PMC when needed."""
+        params = {
+            'query': f'SRC:PPR AND ({query})' if query else 'SRC:PPR',
+            'format': 'json',
+            'resultType': 'core',
+            'pageSize': min(max(max_results * 3, 25), 100),
+        }
+        try:
+            response = self._session.get(_EUROPE_PMC_SEARCH, params=params, timeout=_REQUEST_TIMEOUT)
+            response.raise_for_status()
+            results = response.json().get('resultList', {}).get('result', [])
+            papers = [
+                paper for item in results
+                if (paper := _parse_europe_pmc_preprint(item, self.server)) is not None
+            ]
+            logger.info('Europe PMC fallback returned %d preprints for query %r', len(papers), query)
+            return papers
+        except (requests.RequestException, ValueError) as exc:
+            logger.error('Europe PMC preprint fallback failed: %s', exc)
+            return []
         
     def _local_keyword_filter(self, papers: list[Paper], query: str) -> list[Paper]:
         """
@@ -204,7 +261,8 @@ class BioRxivFetcher:
 
         Steps:
         1. Build date range (today minus days_back).
-        2. Page through API results (100 per page) until max_results reached.
+          2. Page through API results (100 per page), up to the fetch window
+              used to compensate for local keyword filtering.
         3. Filter locally by query keyword(s).
         4. Return up to max_results papers.
         """
@@ -218,8 +276,10 @@ class BioRxivFetcher:
         while len(all_papers) < max_results * 3:
             # We fetch 3x max_results to have enough for filtering
             data = self._fetch_page(start_date, end_date, cursor)
-            if not data: 
+            if not data:
                 logger.warning('Empty response from bioRxiv at cursor=%d', cursor)
+                if not all_papers and query:
+                    all_papers = self._fetch_europe_pmc_fallback(query, max_results)
                 break
             collection = data.get('collection', [])
             if not collection:

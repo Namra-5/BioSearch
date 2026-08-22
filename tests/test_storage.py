@@ -56,6 +56,21 @@ class TestPaperStorage(unittest.TestCase):
         )
         self.assertEqual([], self.storage.search_cached('BRCA1 breast cancer', source='pubmed'))
 
+    def test_search_cached_respects_limit(self) -> None:
+        papers = [self._make_paper(str(i), f'BRCA1 study {i}') for i in range(1, 6)]
+        self.storage.cache_query_results(
+            query='BRCA1',
+            source='pubmed',
+            papers=papers,
+        )
+
+        cached = self.storage.search_cached('BRCA1', source='pubmed', limit=3)
+        self.assertEqual(3, len(cached))
+
+    def test_search_cached_invalid_limit_raises(self) -> None:
+        with self.assertRaises(ValueError):
+            self.storage.search_cached('BRCA1', source='pubmed', limit=0)
+
 
 if __name__ == '__main__':
     unittest.main()

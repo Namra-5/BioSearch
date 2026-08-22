@@ -1,10 +1,7 @@
 # src/knowledge_base.py
 # KnowledgeBase: integrates Paper objects, NER extraction, and the graph.
-# This is the Week 3 'glue' layer — it wires ner_extractor + knowledge_graph
-# together and provides a clean single interface for main_week3.py.
-#
-# It also persists extracted entities alongside papers so we never re-run
-# NER on papers we have already processed.
+# It wires ner_extractor and knowledge_graph together and persists extracted
+# entities alongside papers for reuse.
 
 from __future__ import annotations
 
@@ -19,6 +16,7 @@ from typing import Generator, Optional
 from src.models import Paper
 from src.ner_extractor import BioNERExtractor, PaperEntities
 from src.knowledge_graph import BioKnowledgeGraph
+from src.mesh_fusion import extract_mesh_diseases_batch, fuse_mesh_into_entities
 
 logger = logging.getLogger(__name__)
 
@@ -82,6 +80,7 @@ class KnowledgeBase:
 
     def _init_db(self) -> None:
         with self._conn() as conn:
+            conn.execute('PRAGMA journal_mode=WAL')
             conn.executescript(_CREATE_ENTITIES_TABLE + _CREATE_ENTITIES_INDEX)
 
     # ── NER caching ───────────────────────────────────────────────────────────
@@ -173,8 +172,8 @@ class KnowledgeBase:
         """
         Run NER on all papers, cache results, build and return a knowledge graph.
 
-        Papers already processed (in SQLite) are loaded from cache — NER is not
-        re-run. This means re-processing the same corpus is near-instant.
+        Papers with cached entities are loaded from SQLite. Cache identity is
+        based on paper_id, so changed content under the same ID is not detected.
 
         Parameters
         ----------
@@ -218,7 +217,15 @@ class KnowledgeBase:
         # Build the graph from all entities
         graph = BioKnowledgeGraph()
         all_entities = cached_entities + new_entities
-        graph.add_batch(all_entities)
+        mesh_by_paper_id = extract_mesh_diseases_batch(papers)
+        fused_entities = [
+            fuse_mesh_into_entities(
+                paper_entities,
+                mesh_by_paper_id.get(paper_entities.paper_id, []),
+            )
+            for paper_entities in all_entities
+        ]
+        graph.add_batch(fused_entities)
 
         return graph
 

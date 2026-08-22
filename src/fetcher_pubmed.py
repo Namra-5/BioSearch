@@ -6,7 +6,6 @@
 from __future__ import annotations
 
 import logging
-import os
 import re
 import time
 from datetime import datetime
@@ -20,8 +19,8 @@ from src.models import DataSource, Paper
 
 logger = logging.getLogger(__name__)
 
-# NCBI allows 3 requests/sec without key, 10/sec with key.
-# We stay conservative to avoid getting blocked.
+# NCBI allows approximately 3 requests/sec without a key and 10 requests/sec
+# with a key. The configured intervals remain below those limits.
 _RATE_LIMIT_NO_KEY: float = 0.34     # ~3 requests/sec
 _RATE_LIMIT_WITH_KEY: float = 0.11   # ~9 requests/sec - Allowed 10/sec but stay under to be safe
 _MAX_RETRIES: int = 4
@@ -91,14 +90,14 @@ def _parse_pubmed_date(date_elem: ET.Element | None) -> Optional[datetime]:
 
     return None
 
-def _get_sleep_interval() -> float:
+def _get_sleep_interval(has_api_key: bool) -> float:
     """Determines sleep interval based on presence of API key."""
-    return _RATE_LIMIT_WITH_KEY if os.environ.get("NCBI_API_KEY") else _RATE_LIMIT_NO_KEY
+    return _RATE_LIMIT_WITH_KEY if has_api_key else _RATE_LIMIT_NO_KEY
 
 def _configure_entrez(email: str, api_key: Optional[str] = None) -> None:
     """
     Configure Biopython Entrez globals.
-    NCBI requires an email so they can contact you if your script misbehaves.
+    NCBI requires an email address for Entrez requests.
     The API key raises your rate limit from 3 to 10 requests/second.
     """
     if not email or '@' not in email:
@@ -109,7 +108,6 @@ def _configure_entrez(email: str, api_key: Optional[str] = None) -> None:
     Entrez.email = email
     if api_key:
         Entrez.api_key = api_key
-        os.environ['NCBI_API_KEY'] = api_key  # Ensure it's in env for rate limit checks
         logger.info('Entrez configured with API key (rate limit: 10 req/sec)')
     else:
         logger.warning(
@@ -117,14 +115,12 @@ def _configure_entrez(email: str, api_key: Optional[str] = None) -> None:
             'Get a free key at: https://www.ncbi.nlm.nih.gov/account/'
         )
 
-def _entrez_with_backoff(func_name:str, **kwargs) -> ET.Element:
+def _entrez_with_backoff(func_name:str, has_api_key: bool = False, **kwargs) -> ET.Element:
     """
     Call any Biopython Entrez function with exponential backoff.
 
-    Why exponential backoff?
-    If NCBI returns a 429 (Too Many Requests) or a transient 5xx error,
-    immediately retrying makes things worse. Waiting 2s, then 4s, then 8s
-    gives the server time to recover and avoids a permanent IP ban.
+    Retries use exponential delays after rate-limit and transient server
+    errors, allowing the service time to recover before another request.
     """
     entrez_func = getattr(Entrez, func_name)
     last_exception: Optional[Exception] = None
@@ -134,7 +130,7 @@ def _entrez_with_backoff(func_name:str, **kwargs) -> ET.Element:
             handle = entrez_func(**kwargs)
             record = Entrez.read(handle)
             handle.close()
-            time.sleep(_get_sleep_interval())
+            time.sleep(_get_sleep_interval(has_api_key))
             return record
         except Exception as exc:
             last_exception = exc
@@ -250,8 +246,9 @@ class PubMedFetcher:
                 db='pubmed',
                 term=query,
                 retmax=max_results,
-                usehistory='y', # stores results server-side for EFetch
-                sort='relevance'
+                usehistory='y',
+                sort='relevance',
+                has_api_key=bool(self.api_key),
             )
             ids: list[str] = record.get('IdList', [])
             logger.info('ESearch returned %d PMIDs', len(ids))
@@ -300,7 +297,7 @@ class PubMedFetcher:
                             timeout=30,
                         )
                         response.raise_for_status()
-                        time.sleep(_get_sleep_interval())
+                        time.sleep(_get_sleep_interval(bool(self.api_key)))
                         break
                     except requests.RequestException as exc:
                         wait = _BACKOFF_BASE ** attempt
