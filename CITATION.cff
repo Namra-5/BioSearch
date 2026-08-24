@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "BioSearch AI: A Statistical Comparison of Lexical and Semantic Biomedical Literature Retrieval"
+authors:
+  - family-names: Basharat
+    given-names: Namra
+version: 1.0.0
+date-released: 2026-08-22
+repository-code: "https://github.com/Namra-5/BioSearch"
+url: "https://github.com/Namra-5/BioSearch"
+keywords:
+  - biomedical information retrieval
+  - TF-IDF
+  - BioBERT
+  - knowledge graph
+  - named entity recognition
+license: MIT
