@@ -6,7 +6,7 @@
 
 [![Python](https://img.shields.io/badge/python-3.13-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22078606.svg)](https://doi.org/10.5281/zenodo.22078606)
+[![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.22078606-blue)](https://doi.org/10.5281/zenodo.22078606)
 
 </div>
 
