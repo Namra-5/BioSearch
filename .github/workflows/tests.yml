@@ -25,3 +25,16 @@ jobs:
       - name: Run fast test suite
         run: |
           python -m pytest -m "not slow and not integration" -q
+
+  docker:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build test image
+        run: docker build --tag biosearch-ai:test .
+
+      - name: Run full test suite in container
+        run: docker run --rm biosearch-ai:test

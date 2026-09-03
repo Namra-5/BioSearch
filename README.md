@@ -30,6 +30,7 @@ It started as a Week 1 lexical-retrieval exercise and grew, week by week, into a
   - [Installation](#installation)
   - [Configuration](#configuration)
   - [Quick Usage Examples](#quick-usage-examples)
+- [Archival & Computational Reproducibility](#archival--computational-reproducibility)
 - [CLI Reference](#cli-reference)
 - [Web Dashboard](#web-dashboard)
 - [Data & Reproducibility](#data--reproducibility)
@@ -252,6 +253,24 @@ The five `relevance_Q*.csv` files and `precision_recall_summary.json` are the ha
 
 ---
 
+## Archival & Computational Reproducibility
+
+BioSearch AI's source code, metadata, and benchmark results are archived on [Zenodo](https://doi.org/10.5281/zenodo.22078606) (DOI: `10.5281/zenodo.22078606`). The repository includes a 190+ test `pytest` suite and a pinned `requirements-lock.txt` so the tested Python environment can be reconstructed consistently.
+
+GitHub Actions runs the fast, network-independent test subset on every push and pull request. A separate Docker CI job also builds the root-level `Dockerfile` and runs the complete test suite inside the image. The accompanying `.dockerignore` keeps credentials, caches, databases, and generated outputs out of the build context:
+
+```bash
+# Build the test image
+docker build -t biosearch-ai .
+
+# Run the full test suite inside the container
+docker run --rm biosearch-ai
+```
+
+The Docker image uses Python 3.13 and installs the same pinned lockfile used by CI. Live retrieval and evaluation still depend on their documented external services and credentials; the container does not make network-backed results deterministic.
+
+---
+
 ## Repository Structure
 
 ```
@@ -259,6 +278,8 @@ biosearch/
 ├── main.py                          # Unified CLI entry point
 ├── config.py                        # Environment/config loading
 ├── app.py                           # Streamlit web dashboard
+├── .dockerignore                    # Docker build-context exclusions
+├── Dockerfile                       # Reproducible test-suite container
 ├── findings.md                      # Auto-generated GCS evaluation report
 ├── PRECISION_RECALL_FINDINGS.md     # Hand-maintained precision/recall report
 ├── requirements.txt
