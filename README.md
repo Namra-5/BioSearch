@@ -19,8 +19,17 @@ It started as a Week 1 lexical-retrieval exercise and grew, week by week, into a
 
 ---
 
+## Demo
+
+A short walkthrough of the BioSearch AI pipeline, including the passing test suite, Streamlit dashboard, and reproducibility setup.
+
+https://github.com/user-attachments/assets/01e0fee3-d47a-4866-ac11-e2f345d6997a
+
+---
+
 ## Table of Contents
 
+- [Demo](#demo)
 - [Key Features](#key-features)
 - [Project Evolution](#project-evolution-weeks-1-4)
 - [Evaluation & Findings](#evaluation--findings)
