@@ -108,7 +108,7 @@ Full report: [`PRECISION_RECALL_FINDINGS.md`](PRECISION_RECALL_FINDINGS.md)
 
 ### Retrieval benchmark — 25 queries (`benchmark/`)
 
-A public, citable extension of the five-query benchmark above: 25 biomedical queries across roughly 20 areas, with hand-labeled binary relevance judgments for the pooled top-10 of both rankers (346 judged query–paper pairs), exported in TREC `qrels` and BEIR layouts together with both rankers' run files and a standalone evaluator (`benchmark/evaluate.py`). All 25 queries are hand-labeled (Q1–Q5 are the five queries described above); how the Q6–Q25 labels were recorded and validated is documented in [`benchmark/README.md`](benchmark/README.md), which doubles as the dataset card. Dataset DOI: 10.5281/zenodo.24218563.
+A public, citable extension of the five-query benchmark above: 25 biomedical queries across roughly 20 areas, with hand-labeled binary relevance judgments for the pooled top-10 of both rankers (346 judged query–paper pairs), exported in TREC `qrels` and BEIR layouts together with both rankers' run files and a standalone evaluator (`benchmark/evaluate.py`). All 25 queries are hand-labeled (Q1–Q5 are the five queries described above); how the Q6–Q25 labels were recorded and validated is documented in [`benchmark/README.md`](benchmark/README.md), which doubles as the dataset card. Dataset: [10.5281/zenodo.24218563](https://doi.org/10.5281/zenodo.24218563) · [Hugging Face](https://huggingface.co/datasets/Namra-5/biosearch-retrieval-benchmark).
 
 | Metric | TF-IDF | BioBERT | Difference (TF-IDF − BioBERT), 95% bootstrap CI | Wilcoxon *p* | Sign-test *p* |
 |--------|-------:|--------:|:------------------------------------------------|-------------:|--------------:|
@@ -280,7 +280,7 @@ data/*
 
 ## Archival & Computational Reproducibility
 
-BioSearch AI's source code, metadata, and benchmark results are archived on [Zenodo](https://doi.org/10.5281/zenodo.22078606) (DOI: `10.5281/zenodo.22078606`). The 25-query retrieval benchmark is also released as a standalone dataset (Zenodo DOI: 10.5281/zenodo.24218563; Hugging Face: `Namra-5/biosearch-retrieval-benchmark`). The repository includes a 220+ test `pytest` suite and a pinned `requirements-lock.txt` so the tested Python environment can be reconstructed consistently.
+BioSearch AI's source code, metadata, and benchmark results are archived on [Zenodo](https://doi.org/10.5281/zenodo.22078606) (DOI: `10.5281/zenodo.22078606`). The 25-query retrieval benchmark is also released as a standalone dataset (Zenodo DOI: 10.5281/zenodo.24218563; Hugging Face: [Namra-5/biosearch-retrieval-benchmark](https://huggingface.co/datasets/Namra-5/biosearch-retrieval-benchmark)). The repository includes a 220+ test `pytest` suite and a pinned `requirements-lock.txt` so the tested Python environment can be reconstructed consistently.
 
 GitHub Actions runs the fast, network-independent test subset on every push and pull request. A separate Docker CI job also builds the root-level `Dockerfile` and runs the complete test suite inside the image. The accompanying `.dockerignore` keeps credentials, caches, databases, and generated outputs out of the build context:
 

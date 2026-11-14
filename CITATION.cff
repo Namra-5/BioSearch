@@ -16,3 +16,11 @@ keywords:
   - named entity recognition
   - retrieval benchmark
 license: MIT
+references:
+  - type: dataset
+    title: "BioSearch Retrieval Benchmark: a 25-query biomedical re-ranking benchmark"
+    authors:
+      - family-names: Basharat
+        given-names: Namra
+    doi: "10.5281/zenodo.24218563"
+    year: 2026
