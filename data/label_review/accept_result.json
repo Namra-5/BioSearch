@@ -1,0 +1,9 @@
+{
+ "audited_rows_finalized": 27,
+ "changed_by_audit": 0,
+ "accepted_unchecked": 241,
+ "no_abstract_labeled_0_by_rule": 11,
+ "audit_agreement": 1.0,
+ "audit_kappa": 1.0,
+ "audit_n": 27
+}

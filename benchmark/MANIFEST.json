@@ -1,0 +1,86 @@
+{
+  "README.md": {
+    "bytes": 5990,
+    "sha256": "b316a8554d916414dc3d052a62a6a29d05297142e0f3eca01ebdc0594a9052af"
+  },
+  "WORKFLOW.md": {
+    "bytes": 2377,
+    "sha256": "546c7b9e919edf5c79fd8024eecd00f9be7126331944b5e6df07b6f72cf15469"
+  },
+  "__init__.py": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "beir/corpus.jsonl": {
+    "bytes": 87776,
+    "sha256": "1d9e96c56e9d9416f335efe3dd1928ef05494a93ba1a94752728b5917aecea02"
+  },
+  "beir/qrels/test.tsv": {
+    "bytes": 7856,
+    "sha256": "04e1e942a65981dbb716c658bfcb4a8ee91e084bb31725d7c2720fde7f497c23"
+  },
+  "beir/queries.jsonl": {
+    "bytes": 1805,
+    "sha256": "706f1a22bd275e75d027d2f1af8b8099feb6d482083457f374ce04f0e44aa13a"
+  },
+  "candidates.csv": {
+    "bytes": 59035,
+    "sha256": "2bfde948bb1f82e200c519a56b318357c07eb97b18b1a81d146bcd9c0d26d573"
+  },
+  "eval_results.csv": {
+    "bytes": 1926,
+    "sha256": "5a0bffacc87689c5bb182f46c78b0680454a6629c16042261f497a789247b6bd"
+  },
+  "eval_summary.csv": {
+    "bytes": 600,
+    "sha256": "3e61a96610fc5227bfe0419c8c42bcac7633b6385fbbc71483266886374b9d50"
+  },
+  "evaluate.py": {
+    "bytes": 6267,
+    "sha256": "67bd2095c408d3293e1f40456e4560e3e811fa8efd2620c8193f6944cfa15bb8"
+  },
+  "label_provenance.json": {
+    "bytes": 111,
+    "sha256": "e67aab19377386ccadb01ce2972c5063faac8588d6d7c1cc3cb00bceb670526a"
+  },
+  "label_review/accept_result.json": {
+    "bytes": 193,
+    "sha256": "5632a539e07f8c948808e004c799390f9fa2c2f5e76a85c45eb1be95b8d3571a"
+  },
+  "label_review/audit_key.csv": {
+    "bytes": 646,
+    "sha256": "7ab06c11b07695d54af8f5b88523d31822247e0ee85770f38ea77ef02d036c05"
+  },
+  "label_review/audit_result.json": {
+    "bytes": 129,
+    "sha256": "c0a171cf17a7a43e385193b53b8e6075fcf3b3da4105546bd26e48228396c43a"
+  },
+  "label_review/audit_sample.csv": {
+    "bytes": 41682,
+    "sha256": "55195bab7b84b107d7355dd5769878a7e0cdec3506493056e0372f379a09d94b"
+  },
+  "label_review/calibration.json": {
+    "bytes": 746,
+    "sha256": "58f2542d8c1df34a5c02e7d49b96ae89e077873d41e7297d87b5bdd9a366aad3"
+  },
+  "qrels.tsv": {
+    "bytes": 8522,
+    "sha256": "88dcf57c17bfc237bb79d318bd7781d1ef01e83f6525e9b913c3ba0c7365dbac"
+  },
+  "queries.json": {
+    "bytes": 4282,
+    "sha256": "66eba3e9f75bdc236fba8d0573c8ebd19c4a379a72537a993886044f7cd15ab6"
+  },
+  "queries.jsonl": {
+    "bytes": 3190,
+    "sha256": "a970169c0384775a87f7b7a1069af7ca590c3a7d64275213e78c3aa73f3dee95"
+  },
+  "runs/biobert.run": {
+    "bytes": 10681,
+    "sha256": "11c7027cdf54cfd413b8436b89cb8048e162d311473585cf8e2486bb1e27b14b"
+  },
+  "runs/tfidf.run": {
+    "bytes": 10179,
+    "sha256": "bd75b371815343ef79862dc986daa731e0ecbc182cf013cf9d0b5f1151983efe"
+  }
+}

@@ -106,6 +106,25 @@ Full report: [`PRECISION_RECALL_FINDINGS.md`](PRECISION_RECALL_FINDINGS.md)
 
 > Both documents are explicit about their limitations (small *n*, single annotator, pooled rather than exhaustive recall). Neither claims one retrieval method is universally superior — see [Limitations & Honest Scope](#limitations--honest-scope).
 
+### Retrieval benchmark — 25 queries (`benchmark/`)
+
+A public, citable extension of the five-query benchmark above: 25 biomedical queries across roughly 20 areas, with hand-labeled binary relevance judgments for the pooled top-10 of both rankers (346 judged query–paper pairs), exported in TREC `qrels` and BEIR layouts together with both rankers' run files and a standalone evaluator (`benchmark/evaluate.py`). All 25 queries are hand-labeled (Q1–Q5 are the five queries described above); how the Q6–Q25 labels were recorded and validated is documented in [`benchmark/README.md`](benchmark/README.md), which doubles as the dataset card. Dataset DOI: 10.5281/zenodo.24218563.
+
+| Metric | TF-IDF | BioBERT | Difference (TF-IDF − BioBERT), 95% bootstrap CI | Wilcoxon *p* | Sign-test *p* |
+|--------|-------:|--------:|:------------------------------------------------|-------------:|--------------:|
+| P@10 | 0.784 | 0.784 | 0.000 [−0.060, 0.060] | 0.98 | 0.80 |
+| MRR@10 | 0.817 | 0.903 | −0.087 [−0.174, −0.007] | 0.077 | 0.38 |
+| nDCG@10 | 0.796 | 0.811 | −0.016 [−0.086, 0.056] | 0.64 | 0.40 |
+
+Neither ranker is clearly better. P@10 and nDCG@10 do not differ. BioBERT places the first relevant paper higher on average (MRR@10), but the paired tests do not reach significance (the bootstrap interval only just excludes zero), and three metrics were tested without multiple-comparison correction. Each query has at most about 20 candidates, which limits how far apart two rankers can score. Full per-query results: [`benchmark/eval_results.csv`](benchmark/eval_results.csv) · Summary: [`benchmark/eval_summary.csv`](benchmark/eval_summary.csv).
+
+Reproduce from the committed labels:
+
+```bash
+python scripts/export_benchmark.py --abstracts none
+python benchmark/evaluate.py --qrels benchmark/qrels.tsv --run tfidf=benchmark/runs/tfidf.run --run biobert=benchmark/runs/biobert.run --out-dir benchmark
+```
+
 ---
 
 ## Architecture & Tech Stack
@@ -246,25 +265,22 @@ Four tabs:
 
 ## Data & Reproducibility
 
-`data/` is gitignored by default, with six explicit evidence-file exceptions intended to be tracked in version control:
+`data/` is gitignored by default, with explicit evidence-file exceptions intended to be tracked in version control:
 
 ```gitignore
 data/*
-!data/relevance_Q1.csv
-!data/relevance_Q2.csv
-!data/relevance_Q3.csv
-!data/relevance_Q4.csv
-!data/relevance_Q5.csv
+!data/relevance_Q*.csv
 !data/precision_recall_summary.json
+!data/label_review/
 ```
 
-The five `relevance_Q*.csv` files and `precision_recall_summary.json` are the hand-labeled ground truth behind `PRECISION_RECALL_FINDINGS.md` — they are committed so a fresh clone can reproduce that file's numbers exactly via `python scripts/compute_precision_recall.py --in "data/relevance_Q*.csv"`. Everything else under `data/` (`comparison_results.csv`, `findings_summary.json`, the paper/embedding cache) is safe to regenerate live and is intentionally not committed.
+`relevance_Q1.csv` to `relevance_Q5.csv` and `precision_recall_summary.json` are the hand-labeled ground truth behind `PRECISION_RECALL_FINDINGS.md` — they are committed so a fresh clone can reproduce that file's numbers exactly via `python scripts/compute_precision_recall.py --in "data/relevance_Q[1-5].csv"` (restrict the glob to Q1–Q5: that report is frozen at five queries). `relevance_Q6.csv` to `relevance_Q25.csv` are the pooled candidates and final labels for the 25-query benchmark, and `data/label_review/` holds its calibration, audit and review records (see [`benchmark/README.md`](benchmark/README.md)). Everything else under `data/` (`comparison_results.csv`, `findings_summary.json`, the paper/embedding cache) is safe to regenerate live and is intentionally not committed.
 
 ---
 
 ## Archival & Computational Reproducibility
 
-BioSearch AI's source code, metadata, and benchmark results are archived on [Zenodo](https://doi.org/10.5281/zenodo.22078606) (DOI: `10.5281/zenodo.22078606`). The repository includes a 190+ test `pytest` suite and a pinned `requirements-lock.txt` so the tested Python environment can be reconstructed consistently.
+BioSearch AI's source code, metadata, and benchmark results are archived on [Zenodo](https://doi.org/10.5281/zenodo.22078606) (DOI: `10.5281/zenodo.22078606`). The 25-query retrieval benchmark is also released as a standalone dataset (Zenodo DOI: 10.5281/zenodo.24218563; Hugging Face: `Namra-5/biosearch-retrieval-benchmark`). The repository includes a 220+ test `pytest` suite and a pinned `requirements-lock.txt` so the tested Python environment can be reconstructed consistently.
 
 GitHub Actions runs the fast, network-independent test subset on every push and pull request. A separate Docker CI job also builds the root-level `Dockerfile` and runs the complete test suite inside the image. The accompanying `.dockerignore` keeps credentials, caches, databases, and generated outputs out of the build context:
 
@@ -311,8 +327,17 @@ biosearch/
 ├── scripts/
 │   ├── build_relevance_annotation_template.py
 │   ├── compute_precision_recall.py
-│   └── verify_phase1_hardening.py
-├── tests/                           # pytest suite (190+ tests)
+│   ├── verify_phase1_hardening.py
+│   ├── run_benchmark_queries.py     # Fetch, rank and pool the benchmark queries
+│   ├── label_workflow.py            # Calibration, import, audit and review of relevance labels
+│   ├── merge_judge_answers.py       # Merge judge replies into one validated answer file
+│   ├── export_benchmark.py          # Final labels -> TREC qrels/runs + BEIR export
+│   └── make_manifest.py             # SHA-256 manifest of the release files
+├── benchmark/                       # 25-query retrieval benchmark (dataset card in README.md)
+│   ├── queries.json(l)              # The 25 queries (Q1-Q5 original, Q6-Q25 added)
+│   ├── evaluate.py                  # P@10 / MRR@10 / nDCG@10, Wilcoxon + sign tests, bootstrap CIs
+│   └── ...                          # qrels.tsv, runs/, beir/, eval_*.csv, MANIFEST.json (generated)
+├── tests/                           # pytest suite (220+ tests)
 └── data/                            # Cached papers + evaluation data (see Data & Reproducibility)
 ```
 
@@ -328,7 +353,7 @@ pytest -q
 pytest -m "not slow and not integration" -q
 ```
 
-The suite covers fetchers, storage, both rankers, NER (including gene-symbol canonicalization edge cases), the knowledge graph, deduplication, MeSH fusion, and the evaluator's statistical functions — all against fake/injected dependencies, so the full suite runs in well under two minutes with no network access required. CI installs from `requirements-lock.txt` on Python 3.13 and runs the fast subset on every push.
+The suite covers fetchers, storage, both rankers, NER (including gene-symbol canonicalization edge cases), the knowledge graph, deduplication, MeSH fusion, the evaluator's statistical functions, and the benchmark pipeline (label workflow, export, and its evaluator's edge cases) — all against fake/injected dependencies, so the full suite runs in well under two minutes with no network access required. CI installs from `requirements-lock.txt` on Python 3.13 and runs the fast subset on every push.
 
 ---
 
@@ -338,9 +363,9 @@ This project is intended to demonstrate rigorous engineering and evaluation judg
 
 - **No full UMLS integration** — MeSH-term fusion uses a lightweight, curated heuristic instead of a licensed ontology API; a documented precision/recall trade-off, not an oversight.
 - **GCS values are not fixed** — adding MeSH-term fusion and cross-source deduplication intentionally changed which entities the knowledge graph sees, so GCS numbers from an earlier run are not comparable to a later one without re-running the evaluation. This is expected behavior of a metric computed from a live, evolving graph, not an inconsistency in the metric itself — see [Evaluation & Findings](#evaluation--findings).
-- **Small evaluation sample (n=5 queries)** — both evaluation methods explicitly report this and avoid claiming statistical significance where none exists.
+- **Small evaluation samples (n=5 queries for the GCS and original precision/recall evaluations; n=25 for the retrieval benchmark)** — each evaluation reports this and avoids claiming statistical significance where none exists.
 - **Pooled, not exhaustive, recall** — Recall@10 is measured against the union of both methods' top-10 results, per standard TREC-style pooling methodology, not the full biomedical corpus.
-- **Single annotator** — precision/recall relevance labels were judged by the project author under a disclosed, strict policy; no inter-annotator agreement was measured.
+- **Single annotator** — the five-query precision/recall labels were judged by the project author under a disclosed, strict policy; no inter-annotator agreement was measured. Label provenance for the 25-query benchmark is stated in [`benchmark/README.md`](benchmark/README.md).
 - **CPU-only BioBERT benchmarking** — GPU latency would differ substantially from the reported numbers.
 - **No production infrastructure** (async fetching, a real vector index, multi-user support) — these are named as future work rather than built prematurely; see [Roadmap](#roadmap).
 
@@ -349,11 +374,11 @@ This project is intended to demonstrate rigorous engineering and evaluation judg
 ## Roadmap
 
 - Full UMLS/semantic-type integration for entity normalization
-- Expand the evaluation query set beyond n=5 for stronger statistical power
+- Extend the GCS evaluation beyond n=5 queries (the retrieval benchmark now has 25)
 - FAISS/pgvector-backed similarity search at larger corpus scale
 - PostgreSQL migration path for multi-user/concurrent access
 - Persistent inverted index (FTS5) instead of per-query TF-IDF refitting
-- Expand hand-labeled precision/recall coverage beyond the current 5 queries
+- Add a second annotator to measure inter-annotator agreement on the 25-query benchmark
 - Evaluate retrieval quality under low-bandwidth or rate-limited API conditions, relevant to institutions without a paid NCBI key
 
 ---

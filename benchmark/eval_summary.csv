@@ -1,0 +1,12 @@
+system_or_contrast,metric,mean,ci95_lo,ci95_hi,wilcoxon_p,wins/losses/ties,sign_test_p
+tfidf,P@10,0.7840,0.7280,0.8360,,,
+tfidf,MRR@10,0.8167,0.6967,0.9200,,,
+tfidf,nDCG@10,0.7956,0.7260,0.8579,,,
+biobert,P@10,0.7840,0.7199,0.8480,,,
+biobert,MRR@10,0.9033,0.8033,0.9800,,,
+biobert,nDCG@10,0.8111,0.7483,0.8703,,,
+tfidf - biobert,P@10,0.0000,-0.0600,0.0600,0.9792,7/9/9,0.8036
+tfidf - biobert,MRR@10,-0.0867,-0.1735,-0.0067,0.07688,1/4/20,0.375
+tfidf - biobert,nDCG@10,-0.0156,-0.0864,0.0556,0.6373,9/14/2,0.4049
+tfidf,unjudged@10 (mean),0.0000,,,,,
+biobert,unjudged@10 (mean),0.0000,,,,,

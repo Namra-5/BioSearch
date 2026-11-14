@@ -30,3 +30,6 @@ networkx>=3.2.0
 # Week 4 additions:
 pandas>=2.2.0
 matplotlib>=3.8.0
+
+# Benchmark evaluation (benchmark/evaluate.py imports scipy.stats directly):
+scipy>=1.11.0

@@ -103,7 +103,7 @@ a claim of general superiority — see Section 8.
 
 No causal explanation for these per-query differences is asserted here
 beyond what is directly supported by the retrieved titles — see
-`data/relevance_Q*.csv` for the underlying labeled candidates.
+`data/relevance_Q1.csv` to `data/relevance_Q5.csv` for the underlying labeled candidates.
 
 ## 8. Interpretation
 
@@ -156,7 +156,7 @@ scripts/compute_precision_recall.py
 
 Command used:
 ```bash
-python scripts/compute_precision_recall.py --in "data/relevance_Q*.csv"
+python scripts/compute_precision_recall.py --in "data/relevance_Q[1-5].csv"
 ```
 
 Output summary:

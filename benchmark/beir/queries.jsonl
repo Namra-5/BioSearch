@@ -1,0 +1,25 @@
+{"_id": "Q1", "text": "BRCA1 BRCA2 breast cancer hereditary mutations"}
+{"_id": "Q2", "text": "KRAS oncogene lung cancer targeted therapy"}
+{"_id": "Q3", "text": "TP53 tumour suppressor apoptosis cancer"}
+{"_id": "Q4", "text": "EGFR tyrosine kinase inhibitor resistance non-small cell"}
+{"_id": "Q5", "text": "Alzheimer disease APOE neurodegeneration amyloid"}
+{"_id": "Q6", "text": "Mycobacterium tuberculosis rifampicin resistance rpoB mutations"}
+{"_id": "Q7", "text": "CYP2D6 CYP2C19 antidepressant response pharmacogenomics"}
+{"_id": "Q8", "text": "APOL1 risk variants chronic kidney disease"}
+{"_id": "Q9", "text": "CFTR mutations cystic fibrosis modulator therapy"}
+{"_id": "Q10", "text": "SMN1 spinal muscular atrophy gene therapy"}
+{"_id": "Q11", "text": "HBB mutations beta thalassemia sickle cell"}
+{"_id": "Q12", "text": "anti-VEGF diabetic macular edema ranibizumab aflibercept"}
+{"_id": "Q13", "text": "LRRK2 Parkinson disease kinase inhibitor"}
+{"_id": "Q14", "text": "SOD1 C9orf72 amyotrophic lateral sclerosis"}
+{"_id": "Q15", "text": "IL6 cytokine storm severe COVID-19"}
+{"_id": "Q16", "text": "PCSK9 inhibitor cardiovascular LDL cholesterol"}
+{"_id": "Q17", "text": "JAK2 mutation myeloproliferative neoplasm"}
+{"_id": "Q18", "text": "PD-1 PD-L1 immune checkpoint blockade response"}
+{"_id": "Q19", "text": "GLP-1 receptor agonist semaglutide obesity weight loss"}
+{"_id": "Q20", "text": "miR-21 microRNA cardiac fibrosis"}
+{"_id": "Q21", "text": "FTO obesity genetic variants"}
+{"_id": "Q22", "text": "HLA-B27 ankylosing spondylitis"}
+{"_id": "Q23", "text": "DMD dystrophin Duchenne muscular dystrophy exon skipping"}
+{"_id": "Q24", "text": "eosinophilic asthma biologic therapy dupilumab mepolizumab"}
+{"_id": "Q25", "text": "CD209 DC-SIGN viral infection"}

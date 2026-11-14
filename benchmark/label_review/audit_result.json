@@ -1,0 +1,11 @@
+{
+ "n_verified": 27,
+ "agreement": 1.0,
+ "kappa": 1.0,
+ "confusion": {
+  "tp": 23,
+  "fp": 0,
+  "fn": 0,
+  "tn": 4
+ }
+}

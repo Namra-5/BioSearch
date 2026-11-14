@@ -4,8 +4,8 @@ title: "BioSearch AI: A Statistical Comparison of Lexical and Semantic Biomedica
 authors:
   - family-names: Basharat
     given-names: Namra
-version: 1.0.0
-date-released: 2026-08-22
+version: 1.1.0
+date-released: 2026-11-13
 repository-code: "https://github.com/Namra-5/BioSearch"
 url: "https://github.com/Namra-5/BioSearch"
 keywords:
@@ -14,4 +14,5 @@ keywords:
   - BioBERT
   - knowledge graph
   - named entity recognition
+  - retrieval benchmark
 license: MIT

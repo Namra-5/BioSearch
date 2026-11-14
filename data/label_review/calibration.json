@@ -1,0 +1,47 @@
+{
+ "judge1": {
+  "n": 66,
+  "queries": [
+   "Q1",
+   "Q2",
+   "Q3",
+   "Q4",
+   "Q5"
+  ],
+  "accuracy": 0.9090909090909091,
+  "kappa": 0.7415143603133159,
+  "confusion": {
+   "tp": 48,
+   "fp": 2,
+   "fn": 4,
+   "tn": 12
+  },
+  "per_query": {
+   "Q1": {
+    "n": 12,
+    "agreement": 0.8333333333333334
+   },
+   "Q2": {
+    "n": 14,
+    "agreement": 0.8571428571428571
+   },
+   "Q3": {
+    "n": 13,
+    "agreement": 0.8461538461538461
+   },
+   "Q4": {
+    "n": 14,
+    "agreement": 1.0
+   },
+   "Q5": {
+    "n": 13,
+    "agreement": 1.0
+   }
+  },
+  "abstained": 1,
+  "human_relevant_rate": 0.7878787878787878,
+  "mean_abstract_preview_chars": 400.0,
+  "min_kappa_required": 0.6,
+  "passed": true
+ }
+}

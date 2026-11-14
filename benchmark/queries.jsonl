@@ -1,0 +1,25 @@
+{"qid": "Q1", "category": "oncology", "query": "BRCA1 BRCA2 breast cancer hereditary mutations", "origin": "existing_standard_query"}
+{"qid": "Q2", "category": "oncology", "query": "KRAS oncogene lung cancer targeted therapy", "origin": "existing_standard_query"}
+{"qid": "Q3", "category": "oncology", "query": "TP53 tumour suppressor apoptosis cancer", "origin": "existing_standard_query"}
+{"qid": "Q4", "category": "oncology", "query": "EGFR tyrosine kinase inhibitor resistance non-small cell", "origin": "existing_standard_query"}
+{"qid": "Q5", "category": "neurodegeneration", "query": "Alzheimer disease APOE neurodegeneration amyloid", "origin": "existing_standard_query"}
+{"qid": "Q6", "category": "infectious-disease", "query": "Mycobacterium tuberculosis rifampicin resistance rpoB mutations", "origin": "added_draft"}
+{"qid": "Q7", "category": "pharmacogenomics", "query": "CYP2D6 CYP2C19 antidepressant response pharmacogenomics", "origin": "added_draft"}
+{"qid": "Q8", "category": "nephrology", "query": "APOL1 risk variants chronic kidney disease", "origin": "added_draft"}
+{"qid": "Q9", "category": "rare-disease", "query": "CFTR mutations cystic fibrosis modulator therapy", "origin": "added_draft"}
+{"qid": "Q10", "category": "rare-disease", "query": "SMN1 spinal muscular atrophy gene therapy", "origin": "added_draft"}
+{"qid": "Q11", "category": "rare-disease", "query": "HBB mutations beta thalassemia sickle cell", "origin": "added_draft"}
+{"qid": "Q12", "category": "ophthalmology", "query": "anti-VEGF diabetic macular edema ranibizumab aflibercept", "origin": "added_draft"}
+{"qid": "Q13", "category": "neurodegeneration", "query": "LRRK2 Parkinson disease kinase inhibitor", "origin": "added_draft"}
+{"qid": "Q14", "category": "neurodegeneration", "query": "SOD1 C9orf72 amyotrophic lateral sclerosis", "origin": "added_draft"}
+{"qid": "Q15", "category": "immunology", "query": "IL6 cytokine storm severe COVID-19", "origin": "added_draft"}
+{"qid": "Q16", "category": "cardiovascular", "query": "PCSK9 inhibitor cardiovascular LDL cholesterol", "origin": "added_draft"}
+{"qid": "Q17", "category": "hematology", "query": "JAK2 mutation myeloproliferative neoplasm", "origin": "added_draft"}
+{"qid": "Q18", "category": "immuno-oncology", "query": "PD-1 PD-L1 immune checkpoint blockade response", "origin": "added_draft"}
+{"qid": "Q19", "category": "metabolic", "query": "GLP-1 receptor agonist semaglutide obesity weight loss", "origin": "added_draft"}
+{"qid": "Q20", "category": "non-coding-rna", "query": "miR-21 microRNA cardiac fibrosis", "origin": "added_draft"}
+{"qid": "Q21", "category": "metabolic", "query": "FTO obesity genetic variants", "origin": "added_draft"}
+{"qid": "Q22", "category": "autoimmune", "query": "HLA-B27 ankylosing spondylitis", "origin": "added_draft"}
+{"qid": "Q23", "category": "rare-disease", "query": "DMD dystrophin Duchenne muscular dystrophy exon skipping", "origin": "added_draft"}
+{"qid": "Q24", "category": "respiratory", "query": "eosinophilic asthma biologic therapy dupilumab mepolizumab", "origin": "added_draft"}
+{"qid": "Q25", "category": "immunology", "query": "CD209 DC-SIGN viral infection", "origin": "added_draft"}
